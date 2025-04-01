@@ -1,10 +1,20 @@
 exports.config = {
   output: './output',
   helpers: {
-    Playwright: {
-      browser: 'chromium',
-      url: 'https://org-o0innoss.account.ap1.bartendercloud.com',
-      show: true
+    Appium: {
+      appiumV2: true,
+      path: '/',
+      platform: "Windows",
+      url: "http://127.0.0.1:4723",
+      desiredCapabilities: {
+
+        automationName: "Windows",
+        platformName: "Windows",
+        newCommandTimeout: 800,
+        unicodeKeyboard: true,
+        waitForAppLunch: 15,
+        app: "Root"
+      }
     }
   },
   include: {
