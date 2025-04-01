@@ -21,4 +21,6 @@ Given(/^The user has installed a driver on the system$/, function () {
         }
         console.log(stdout);
     });
+    I.wait(3);
+    I.click("//RadioButton[@Name='I accept the terms in the license agreement']");
 });

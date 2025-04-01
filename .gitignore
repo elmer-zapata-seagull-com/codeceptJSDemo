@@ -45,3 +45,4 @@ allure-results/
 allure-report/
 !.gitkeep
 !apps/.gitkeep
+/tmpLocator.txt

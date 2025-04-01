@@ -9,19 +9,28 @@ interface UIAElement {
     FrameworkId?: string;
 }
 
+function escapeQuotes(text: string): string {
+    return text.replace(/"/g, '\\"').replace(/'/g, "\\'");
+}
+
 function parseElementFromText(text: string): UIAElement {
     const element: UIAElement = {};
     const lines = text.split(/\r?\n/);
 
     for (const line of lines) {
-        const [key, ...valueParts] = line.split(':');
+        const [keyRaw, ...valueParts] = line.split(':');
+        const key = keyRaw.trim();
         const value = valueParts.join(':').trim();
 
-        if (key.includes('Name')) element.Name = value;
-        if (key.includes('AutomationId')) element.AutomationId = value;
-        if (key.includes('ControlType')) element.ControlType = value;
-        if (key.includes('ClassName')) element.ClassName = value;
-        if (key.includes('FrameworkId')) element.FrameworkId = value;
+        if (key === 'Name') element.Name = value;
+        if (key === 'AutomationId') element.AutomationId = value;
+        if (key === 'ClassName') element.ClassName = value;
+        if (key === 'FrameworkId') element.FrameworkId = value;
+
+        if (key === 'ControlType') {
+            const match = value.match(/UIA_(\w+)ControlTypeId/);
+            element.ControlType = match ? match[1] : value;
+        }
     }
 
     return element;
@@ -32,7 +41,7 @@ function generateLocators(el: UIAElement): string {
 
     // XPath
     const xpathParts: string[] = [];
-    if (el.Name) xpathParts.push(`@Name='${el.Name}'`);
+    if (el.Name) xpathParts.push(`@Name='${escapeQuotes(el.Name)}'`);
     if (el.AutomationId) xpathParts.push(`@AutomationId='${el.AutomationId}'`);
     if (el.ControlType) xpathParts.push(`@ControlType='${el.ControlType}'`);
     const xpath = xpathParts.length
@@ -42,7 +51,7 @@ function generateLocators(el: UIAElement): string {
     lines.push('🔎 XPath:');
     lines.push(`  ${xpath}\n`);
 
-    // Appium / WinAppDriver locators
+    // Appium / WinAppDriver
     lines.push('📱 Appium / WinAppDriver:');
     if (el.AutomationId) lines.push(`  driver.findElementByAccessibilityId("${el.AutomationId}")`);
     if (el.Name) lines.push(`  driver.findElementByName("${el.Name}")`);
@@ -58,10 +67,11 @@ function generateLocators(el: UIAElement): string {
     return lines.join('\n');
 }
 
+// Main
 const inputFilePath = process.argv[2];
 if (!inputFilePath) {
     console.error('❌ Please add the path. Example:');
-    console.error('   ts-node generate-locators-from-file.ts ruta/al/file.txt');
+    console.error('   ts-node generate-locators-from-file.ts path/to/file.txt');
     process.exit(1);
 }
 
