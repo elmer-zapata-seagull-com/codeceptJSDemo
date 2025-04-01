@@ -1,8 +1,7 @@
 {
-
   "scripts": {
-    "executeOne": "npx codeceptjs run --features features/basic.feature"
-
+    "executeOne": "npx codeceptjs run --features features/basic.feature",
+    "executeDesktop": "npx codeceptjs run --features features/uninstalldriver.feature --config=codecept-desktop.conf.ts --steps --debug"
   },
   "dependencies": {
     "@codeceptjs/allure-legacy": "^1.0.2",
@@ -24,3 +23,4 @@
     "webdriverio": "^9.10.1"
   }
 }
+
